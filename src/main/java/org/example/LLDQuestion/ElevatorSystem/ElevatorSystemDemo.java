@@ -113,6 +113,7 @@ class Elevator implements Runnable {
     TreeSet<Integer> downStops;
     boolean running = false;
     Lock lock;
+    List<Observer>observers;
 
     public Elevator(int id, int startingFloor) {
         this.id = id;
@@ -123,6 +124,7 @@ class Elevator implements Runnable {
         elevatorState = ElevatorState.IDLE;
         doorState = DoorState.CLOSED;
         lock = new ReentrantLock();
+        observers=new ArrayList<>();
     }
 
 
@@ -138,6 +140,16 @@ class Elevator implements Runnable {
         }
     }
 
+    void addObserver( Observer observer){
+        observers.add(observer);
+    }
+
+    private void notifyObserver(){
+        for(Observer observer: observers){
+            observer.update(id,currentFloor);
+        }
+    }
+
     void step() {
         lock.lock();
         try {
@@ -150,8 +162,10 @@ class Elevator implements Runnable {
                 if (currentFloor == upStops.first()) {
                     upStops.pollFirst();
                     openAndCloseDoors();
+                    return;
                 }
                 currentFloor++;
+                notifyObserver();
             } else if (direction == Direction.DOWN) {
                 if (downStops.isEmpty()) {
                     direction = upStops.isEmpty() ? Direction.IDLE : Direction.UP;
@@ -161,8 +175,10 @@ class Elevator implements Runnable {
                 if (currentFloor == downStops.first()) {
                     downStops.pollFirst();
                     openAndCloseDoors();
+                    return;
                 }
                 currentFloor--;
+                notifyObserver();
             } else {
                 elevatorState = ElevatorState.IDLE;
             }
@@ -186,11 +202,14 @@ class Elevator implements Runnable {
                 upStops.add(request.floor);
                 if (direction == Direction.IDLE) {
                     direction = Direction.UP;
+                    direction = Direction.UP;
+                    elevatorState = ElevatorState.MOVING;
                 }
             } else if (request.floor < currentFloor) {
                 downStops.add(request.floor);
                 if (direction == Direction.IDLE) {
                     direction = Direction.DOWN;
+                    elevatorState = ElevatorState.MOVING;
                 }
             } else {
                 openAndCloseDoors();
@@ -231,6 +250,32 @@ class ELevetorSystem {
         elevator.addRequest(request);
         System.out.println("Assigned request for floor " + request.floor + " to elevator " + elevator.id);
     }
+
+    public void addObserver(Observer observer) {
+        for (Elevator elevator : elevators) {
+            elevator.addObserver(observer);
+        }
+    }
+}
+
+interface Observer{
+    void update(int elevatorId,int currentFloor);
+}
+
+class FloorObserver implements Observer{
+    private int floor;
+
+    public FloorObserver(int floor) {
+        this.floor = floor;
+    }
+    @Override
+    public void update(int elevatorId,int currentFloor) {
+        System.out.println(
+                "Display at floor " + floor +
+                        " -> Elevator " + elevatorId +
+                        " is at floor " + currentFloor
+        );
+    }
 }
 
 
@@ -238,13 +283,31 @@ public class ElevatorSystemDemo {
     public static void main(String[] args) {
 
         ElevatorSelectionStrategy elevatorSelectionStrategy = new nearestElevatorSelectionStrategy();
-        ELevetorSystem eLevetorSystem = new ELevetorSystem(elevatorSelectionStrategy, 3);
+        ELevetorSystem eLevetorSystem = new ELevetorSystem(elevatorSelectionStrategy, 1);
+
+        FloorObserver floor0Display = new FloorObserver(0);
+        FloorObserver floor1Display = new FloorObserver(1);
+        FloorObserver floor2Display = new FloorObserver(2);
+        FloorObserver floor3Display = new FloorObserver(3);
+        FloorObserver floor4Display = new FloorObserver(4);
+        FloorObserver floor5Display = new FloorObserver(5);
+        FloorObserver floor6Display = new FloorObserver(6);
+
+        eLevetorSystem.addObserver(floor0Display);
+        eLevetorSystem.addObserver(floor1Display);
+        eLevetorSystem.addObserver(floor2Display);
+        eLevetorSystem.addObserver(floor3Display);
+        eLevetorSystem.addObserver(floor4Display);
+        eLevetorSystem.addObserver(floor5Display);
+        eLevetorSystem.addObserver(floor6Display);
+
         Request req1 = new Request(3, Direction.UP);
-        Request req2 = new Request(1, Direction.DOWN);
+        Request req2 = new Request(19, null);
         Request req3 = new Request(6, Direction.DOWN);
 
         eLevetorSystem.addRequest(req1);
         eLevetorSystem.addRequest(req2);
-        eLevetorSystem.addRequest(req3);
+//        eLevetorSystem.addRequest(req2);
+//        eLevetorSystem.addRequest(req3);
     }
 }
