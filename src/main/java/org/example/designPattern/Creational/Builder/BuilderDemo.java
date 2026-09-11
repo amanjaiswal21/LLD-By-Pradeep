@@ -8,10 +8,7 @@ import java.util.stream.Stream;
 
 public class BuilderDemo {
     public static void main(String[] args) {
-        Student s1= new Student.StudentBuilder("Aman").build();
-        Student s2= new Student.StudentBuilder("Aman 2").setAge(22).setRollNo(24).build();
-
-        System.out.println("S1{}" + s1);
-        System.out.println("S2{}" + s2);
+       Student s1=new Student.StudentBuilder("Aman").build();
+       
     }
 }

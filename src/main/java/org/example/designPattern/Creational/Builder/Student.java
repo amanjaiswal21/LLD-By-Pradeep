@@ -1,23 +1,23 @@
 package org.example.designPattern.Creational.Builder;
 
 public class Student {
-    private String name;  //mandatoryField
-    private int rollNo;  //optional
-    private int age; //optional
-    private String address;  //optional
+    private final String name;
+    private final int age;
+    private final String email;
+    private final String address;
 
-    private Student(StudentBuilder builder ) {
-     this.name=builder.name;
-     this.address=builder.address;
-     this.age=builder.age;
-     this.rollNo=builder.rollNo;
+    private Student(StudentBuilder builder){
+        this.name=builder.name;
+        this.age=builder.age;
+        this.address=builder.address;
+        this.email= builder.email;
     }
 
-    public static class StudentBuilder {
-        private String name;  //mandatoryField
-        private int rollNo;  //optional
-        private int age; //optional
-        private String address;  //optional
+    public static class StudentBuilder{
+        private final String name;
+        private int age;
+        private String email;
+        private String address;
 
         public StudentBuilder(String name){
             this.name=name;
@@ -25,10 +25,10 @@ public class Student {
 
         public StudentBuilder setAge(int age){
             this.age=age;
-            return this;
+            return  this;
         }
-        public StudentBuilder setRollNo(int rollNo){
-            this.rollNo=rollNo;
+        public StudentBuilder setEmail(String email){
+            this.email=email;
             return this;
         }
         public StudentBuilder setAddress(String address){
@@ -41,3 +41,6 @@ public class Student {
         }
     }
 }
+
+
+
