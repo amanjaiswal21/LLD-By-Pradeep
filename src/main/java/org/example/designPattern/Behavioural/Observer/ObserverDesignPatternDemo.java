@@ -4,43 +4,45 @@ package org.example.designPattern.Behavioural.Observer;
 import java.util.ArrayList;
 import java.util.List;
 
-interface obsevable{
+interface observable {
     void addObserver(Observer observer);
+
     void removeObserver(Observer observer);
 }
 
-class Stock implements obsevable{
+class Stock implements observable {
     int price;
-    List<Observer> observers=new ArrayList<>();
+    List<Observer> observers = new ArrayList<>();
 
     @Override
-    public void addObserver(Observer observer){
+    public void addObserver(Observer observer) {
         observers.add(observer);
     }
+
     @Override
-    public void removeObserver(Observer observer){
+    public void removeObserver(Observer observer) {
         observers.remove(observer);
     }
 
-    private void notifyAllObserver(){
-        for(Observer observer: observers){
+    private void notifyAllObserver() {
+        for (Observer observer : observers) {
             observer.notify(price);
         }
     }
 
-    void setPrice(int state){
-        if(price!=state){
-            this.price=state;
+    void setPrice(int state) {
+        if (price != state) {
+            this.price = state;
             notifyAllObserver();
         }
     }
 }
 
-interface Observer{
+interface Observer {
     void notify(int state);
 }
 
-class Phone implements Observer{
+class Phone implements Observer {
 
     @Override
     public void notify(int state) {
@@ -48,7 +50,7 @@ class Phone implements Observer{
     }
 }
 
-class TV implements Observer{
+class TV implements Observer {
 
     @Override
     public void notify(int state) {
@@ -59,10 +61,10 @@ class TV implements Observer{
 
 public class ObserverDesignPatternDemo {
     public static void main(String[] args) {
-      Stock stock =new Stock();
-      stock.addObserver(new TV());
-      stock.addObserver(new Phone());
+        Stock stock = new Stock();
+        stock.addObserver(new TV());
+        stock.addObserver(new Phone());
 
-      stock.setPrice(2000);
+        stock.setPrice(2000);
     }
 }
