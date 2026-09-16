@@ -4,14 +4,21 @@ package org.example.designPattern.Behavioural.Observer;
 import java.util.ArrayList;
 import java.util.List;
 
-class Stock{
+interface obsevable{
+    void addObserver(Observer observer);
+    void removeObserver(Observer observer);
+}
+
+class Stock implements obsevable{
     int price;
     List<Observer> observers=new ArrayList<>();
 
-    void addObserver(Observer observer){
+    @Override
+    public void addObserver(Observer observer){
         observers.add(observer);
     }
-    void removerObserver(Observer observer){
+    @Override
+    public void removeObserver(Observer observer){
         observers.remove(observer);
     }
 
